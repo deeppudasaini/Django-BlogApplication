@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}Daily Post{% endblock title %}
+{% block content %}
+    <header class="masthead" style="background-image:url('./static/assets/img/home-bg.jpg');">
+        <div class="overlay"></div>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-10 col-lg-8 mx-auto">
+                    <div class="site-heading">
+                        <h1>Daily Post</h1><span class="subheading">A Blog For Everyone</span></div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-10 col-lg-8">
+                <div class="post-preview">
+                    <a href="#">
+                        <h2 class="post-title">Man must explore, and this is exploration at its greatest</h2>
+                        <h3 class="post-subtitle">Problems look mighty small from 150 miles up</h3>
+                    </a>
+                    <p class="post-meta">Posted by&nbsp;<a href="#">Start Bootstrap on September 24, 2018</a></p>
+                </div>
+                <hr>
+                <div class="post-preview"><a href="#"></a></div>
+                <div class="clearfix"><button class="btn btn-primary float-right" type="button">All Posts ⇒</button></div>
+            </div>
+        </div>
+    </div>
+    {% endblock content %}
