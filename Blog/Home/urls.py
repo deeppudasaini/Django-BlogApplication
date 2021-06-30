@@ -7,7 +7,5 @@ path('home',views.home,name="Home"),
 path('login',views.Login,name="Login"),
 path('contact',views.Contact,name="Contact"),
 path('about',views.About,name="About"),
-path('post',views.SinglePost,name="Post"),
-
-
+path('post/<int:idOfPost>/',views.SinglePost,name="Post"),
 ]
