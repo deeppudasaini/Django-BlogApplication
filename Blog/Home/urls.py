@@ -8,4 +8,5 @@ path('login',views.Login,name="Login"),
 path('contact',views.Contact,name="Contact"),
 path('about',views.About,name="About"),
 path('post/<int:idOfPost>/',views.SinglePost,name="Post"),
+path('register',views.register,name="Register"),
 ]
