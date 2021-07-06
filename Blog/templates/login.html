@@ -3,7 +3,7 @@
 {% block title %}Login{% endblock title %}
 {% block content %}
 
-
+  
 <div class="container">
 	<div class="d-flex justify-content-center h-100">
 		<div class="card">
@@ -42,7 +42,7 @@
 
 </div>
 			<div class="card-body">
-				<form method="POST">
+				<form method="POST" action="LoginCheck">
                 {% csrf_token %}
 					<div class="input-group form-group">
 						<div class="input-group-prepend">
@@ -65,13 +65,20 @@
 			</div>
 			<div class="card-footer">
 				<div class="d-flex justify-content-center links">
-					<a href="#" style="color:white"">Forgot your password ?</a>
+					<a href="#" style="color:white">Forgot your password ?</a>
 				</div>
 			
 			</div>
 		</div>
 	</div>
 </div>
+ {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-success" role="alert">
+    {{ message }}
+    </div>
+    {% endfor %}
+{% endif %}
 <style>
 
 
