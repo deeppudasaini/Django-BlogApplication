@@ -7,7 +7,9 @@ from rest_framework.response import Response
 from .serializers import FeedbackSerializer,PostSerializer
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from .Google import Create_Service
-import base64
+import base64,os
+import random
+from twilio.rest import Client
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate,logout,login
 from email.mime.multipart import MIMEMultipart
@@ -16,17 +18,11 @@ import datetime,random,string
 # Create your views here.
 @api_view(['GET'])
 def Index(request):
-    post=Post.objects.all()
-    serializer=PostSerializer(post,many=True)  
-    context={ 
-        'posts':serializer.data
-    }
-    return render(request,'index.html',context)
+    return redirect('/home')
     
 def About(request):
     return render(request,'about.html') 
-
-  
+    
 def Contact(request):
     if request.method=='POST':
         name=request.POST['name']
@@ -58,12 +54,43 @@ def LoginCheck(request):
         user = authenticate(username=u, password=p)
         
         if user is not None:
-            login(request,user)                
-            return redirect("/home")
+            #OTP sample
+            # account_sid = 'ACc20b0e9e17dddde87c26c777c27071b6'
+            # auth_token = 'f8f146d82b7eea13f7577c1111da11e6'
+            # client = Client(account_sid, auth_token)
+            # otpp='12345';
+            # message = client.messages \
+            #     .create(
+            #         messaging_service_sid='MG9752274e9e519418a7406176694466fa',
+            #         body='Please Verify by entering below OTP\n'+otpp,
+            #         to='+9779863336834'#Sample Number
+            #     )
+            # print(message.sid)
+            otpp=random(6);
+            CLIENT_SECRET_FILE = 'credentials.json'
+            API_NAME = 'gmail'
+            API_VERSION = 'v1'
+            SCOPES = ['https://mail.google.com/']
+            service = Create_Service(CLIENT_SECRET_FILE, API_NAME, API_VERSION, SCOPES)
+            emailMsg = 'Hello '+u+' \n Your OTP is ' + otpp
+            mimeMessage = MIMEMultipart() 
+            mimeMessage['to'] = User.objects.filter(username=u)
+            mimeMessage['subject'] = 'OTP Verification'
+            mimeMessage.attach(MIMEText(emailMsg, 'plain'))
+            raw_string = base64.urlsafe_b64encode(mimeMessage.as_bytes()).decode()
+            message = service.users().messages().send(userId='me', body={'raw': raw_string}).execute()
+            messages.success(request, 'Please check your email for your OTP')
+            if request.method=='post':
+                if request.POST['otp']==otpp:
+                    login(request,user)                
+                    return redirect("/home")
+                else:
+                    return render(request,'login.html')
         else:
             return render(request,'login.html')
     else:
         return render(request,'login.html')
+@api_view(['GET'])
 def home(request):
     post=Post.objects.all()
     serializer=PostSerializer(post,many=True)  
@@ -71,6 +98,9 @@ def home(request):
         'posts':serializer.data
     }
     return render(request,'index.html',context)
+    
+def About(request):
+    return render(request,'about.html') 
 def register(request):
     if request.method=='POST':
         # if Staff.objects.filter(email=request.POST['reg-email']).exists():
@@ -85,7 +115,9 @@ def register(request):
             singleRow=Staff(name=name,email=email,username=username,password=password)
             singleRow.save()
             staffuser=User.objects.create_user(username=username,email=email,password=password)
+            
             staffuser.save()
+            staffuser.user_permission.set([])
             CLIENT_SECRET_FILE = 'credentials.json'
             API_NAME = 'gmail'
             API_VERSION = 'v1'
@@ -100,7 +132,7 @@ def register(request):
             message = service.users().messages().send(userId='me', body={'raw': raw_string}).execute()
             messages.success(request, 'Please check your email for your email and password')
     else:
-         return render(request,'login.html')        
+         return render(request,'login.h tml')        
     return render(request,'login.html')
 def exit(request):
     logout(request)
